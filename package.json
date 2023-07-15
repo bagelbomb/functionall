@@ -1,0 +1,13 @@
+{
+  "name": "functionall",
+  "version": "0.1.0",
+  "description": "An experiment to replace all JS syntax with functions",
+  "main": "index.js",
+  "scripts": {},
+  "author": "Tanner Iverson",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bagelbomb/functionall.git"
+  }
+}
