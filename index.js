@@ -1,84 +1,28 @@
 'use strict';
 
-const { getTopLevelScope, resetTopLevelScope } = require('./lib/topLevelScope');
-const { $let, $const, $get, $set } = require('./lib/keywords/variables');
-const { $if, $else, $elseIf } = require('./lib/keywords/conditionals');
-const { $and, $or, $not } = require('./lib/operators/logical');
-const {
-  $add,
-  $subtract,
-  $multiply,
-  $divide,
-} = require('./lib/operators/arithmetic');
-
-// TODO: Move the following to their own modules:
-
-function $block(...statements) {
-  return (scope = getTopLevelScope()) => {
-    const innerScope = { upperScope: scope };
-
-    // implement hoisting of functions by moving $function statements to the start (wouldn't work for top level)?
-    statements.forEach(s => s(innerScope));
-  };
-}
-
-function $array(...items) {
-  return (scope = getTopLevelScope()) => {
-    return items.map(item => (typeof item === 'function' ? item(scope) : item));
-  };
-}
-
-// TODO: Add scopes to the following functions and call any parameters that can be functions with the current scope:
-
-function $entry(key, value) {
-  if (value) {
-    return { [key]: value };
-  } else {
-    return { [key]: $get(key) };
-  }
-}
-
-function $object(...entries) {
-  return Object.assign({}, ...entries);
-}
-
-function $equals(value1, value2) {
-  return value1 === value2;
-}
-
-function $looseEquals(value1, value2) {
-  return value1 == value2;
-}
-
-function $typeof(value) {
-  return typeof value;
-}
+const { resetTopLevelScope } = require('./lib/topLevelScope');
+const keywords = require('./lib/keywords');
+const operators = require('./lib/operators');
+const structures = require('./lib/structures');
 
 Object.assign(globalThis, {
-  $let,
-  $const,
-  $get,
-  $set,
-  $if,
-  $else,
-  $elseIf,
-  $and,
-  $or,
-  $not,
-  $block,
-  $add,
-  $subtract,
-  $multiply,
-  $divide,
-  $array,
-  $entry,
-  $object,
-  $equals,
-  $looseEquals,
-  $typeof,
+  ...keywords,
+  ...operators,
+  ...structures,
 });
 
-module.exports = resetTopLevelScope;
+module.exports = (...statements) => {
+  resetTopLevelScope();
+
+  // TODO: implement hoisting of functions by moving $function statements to the start (wouldn't work for outside calls)?
+  statements.forEach(s => s());
+};
+
+// TODO: Add README
+// TODO: Add Parcel
+// TODO: Add unit tests
+// TODO: Add more error handling
+// TODO: Add function to automatically add scope?
 
 // The goal is to implement something like the following (example from coffeescript.org), as a start:
 
@@ -127,4 +71,5 @@ module.exports = resetTopLevelScope;
 
 // $const('cubes', $get('list', 'map')($get('math', 'cube')));
 
-// Functions to Define: $let, $if, $get, $set, $function, $return, $multiply, $const, $array, $object, $entry, $rest, $and, $not, $equals, $typeof, $call(?)
+// Functions to Define: $let, $if, $get, $set, $function, $return, $multiply, $const, $array, $object, $entry, $rest, $and, $not, $equals, $typeOf, $call(?)
+// Functions Left: $function, $return, $rest, $call(?)
