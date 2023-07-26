@@ -34,7 +34,7 @@ module.exports = (...statements) => {
 
 // $if($get('opposite'), $set('number', -42));
 
-// $function('square', 'x', $return($multiply($get('x'), $get('x'))));
+// $function('square', ['x'], $return($multiply($get('x'), $get('x'))));
 
 // $const('list', $array(1, 2, 3, 4, 5));
 
@@ -47,7 +47,7 @@ module.exports = (...statements) => {
 //       'cube',
 //       $function(
 //         null,
-//         'x',
+//         ['x'],
 //         $return($multiply($get('x'), $get('square')($get('x'))))
 //       )
 //     )
@@ -56,8 +56,7 @@ module.exports = (...statements) => {
 
 // $function(
 //   'race',
-//   'winner',
-//   $rest('runners'),
+//   ['winner', $rest('runners')],
 //   $return($get('print')($get('winner'), $get('runners')))
 // );
 
