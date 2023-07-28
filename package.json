@@ -1,9 +1,11 @@
 {
   "name": "functionall",
   "version": "0.1.0",
-  "description": "An experiment to replace all JS syntax with functions",
+  "description": "An experiment to replace all JavaScript syntax with functions",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "repl": "node -i -e \"require('./src/index')()\""
+  },
   "author": "Tanner Iverson",
   "license": "ISC",
   "repository": {

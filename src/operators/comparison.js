@@ -1,6 +1,6 @@
 'use strict';
 
-const { getTopLevelScope } = require('../topLevelScope');
+const { getTopLevelScope } = require('../utils/topLevelScope');
 
 // choosing to make === the default, rather than ==
 exports.$equals = function (value1, value2) {

@@ -1,9 +1,10 @@
 'use strict';
 
-const { resetTopLevelScope } = require('./lib/topLevelScope');
-const keywords = require('./lib/keywords');
-const operators = require('./lib/operators');
-const structures = require('./lib/structures');
+const keywords = require('./keywords');
+const operators = require('./operators');
+const structures = require('./structures');
+const { resetTopLevelScope } = require('./utils/topLevelScope');
+const hoistFunctions = require('./utils/hoistFunctions');
 
 Object.assign(globalThis, {
   ...keywords,
@@ -14,8 +15,9 @@ Object.assign(globalThis, {
 module.exports = (...statements) => {
   resetTopLevelScope();
 
-  // TODO: implement hoisting of functions by moving $function statements to the start (wouldn't work for outside calls)?
-  statements.forEach(s => s());
+  const orderedStatements = hoistFunctions(statements);
+
+  orderedStatements.forEach(s => s());
 };
 
 // TODO: Add README
@@ -71,4 +73,4 @@ module.exports = (...statements) => {
 // $const('cubes', $get('list', 'map')($get('math', 'cube')));
 
 // Functions to Define: $let, $if, $get, $set, $function, $return, $multiply, $const, $array, $object, $entry, $rest, $and, $not, $equals, $typeOf, $call(?)
-// Functions Left: $function, $return, $rest, $call(?)
+// Functions Left: $rest

@@ -1,6 +1,6 @@
 'use strict';
 
-const { getTopLevelScope } = require('../topLevelScope');
+const { getTopLevelScope } = require('../utils/topLevelScope');
 
 exports.$typeOf = function (value) {
   return (scope = getTopLevelScope()) => {

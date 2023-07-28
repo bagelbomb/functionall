@@ -1,12 +1,12 @@
 'use strict';
 
-const { getTopLevelScope } = require('../topLevelScope');
+const { getTopLevelScope } = require('../utils/topLevelScope');
 const { $let } = require('./variables');
 
 // TODO: implement arrow functions
 
 exports.$function = function (name, params, functionBlock) {
-  return (scope = getTopLevelScope()) => {
+  const scopedFn = (scope = getTopLevelScope()) => {
     // choosing to follow strict mode here (block-scoped functions) and to disallow redefining functions
 
     if (name && scope[name]) {
@@ -16,6 +16,7 @@ exports.$function = function (name, params, functionBlock) {
     const fn = function (...args) {
       const innerScope = { upperScope: scope };
 
+      // TODO: make params an $array or something
       params.forEach((p, i) => $let(p, args[i])(innerScope));
 
       return functionBlock(innerScope);
@@ -29,6 +30,13 @@ exports.$function = function (name, params, functionBlock) {
       return fn;
     }
   };
+
+  if (name) {
+    // Only named functions should be hoisted
+    scopedFn.functionallFunction = true;
+  }
+
+  return scopedFn;
 };
 
 // TODO: implement $return calls inside blocks
@@ -51,9 +59,3 @@ exports.$call = function (fn, ...params) {
     return scopedFn(...scopedParams);
   };
 };
-
-// $function('saySomething', ['text'], $call($get(console, 'log'), $get('text')))()
-// $call($get('saySomething'), 'hi there')()
-
-// $function('add', ['num1', 'num2'], $return($add($get('num1'), $get('num2'))))()
-// $call($get('add'), 1, 4)()
