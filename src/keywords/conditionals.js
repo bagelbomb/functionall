@@ -1,9 +1,9 @@
 'use strict';
 
-const { getTopLevelScope } = require('../utils/topLevelScope');
+const { withScope } = require('../utils/scope');
 
 exports.$if = function (condition, ifBlock, ...elseStatements) {
-  return (scope = getTopLevelScope()) => {
+  return withScope(scope => {
     const innerScope = { upperScope: scope };
 
     if (condition(scope)) {
@@ -11,23 +11,23 @@ exports.$if = function (condition, ifBlock, ...elseStatements) {
     } else {
       elseStatements.every(e => e(innerScope));
     }
-  };
+  });
 };
 
 exports.$else = function (elseBlock) {
-  return (scope = getTopLevelScope()) => {
+  return withScope(scope => {
     elseBlock(scope);
     return false;
-  };
+  });
 };
 
 exports.$elseIf = function (condition, elseIfBlock) {
-  return (scope = getTopLevelScope()) => {
+  return withScope(scope => {
     if (condition(scope)) {
       elseIfBlock(scope);
       return false;
     } else {
       return true;
     }
-  };
+  });
 };

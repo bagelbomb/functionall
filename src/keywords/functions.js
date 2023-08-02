@@ -1,12 +1,12 @@
 'use strict';
 
-const { getTopLevelScope } = require('../utils/topLevelScope');
+const { withScope, scoped } = require('../utils/scope');
 const { $let } = require('./variables');
 
 // TODO: implement arrow functions
 
 exports.$function = function (name, params, functionBlock) {
-  const scopedFn = (scope = getTopLevelScope()) => {
+  const scopedFn = withScope(scope => {
     // choosing to follow strict mode here (block-scoped functions) and to disallow redefining functions
 
     if (name && scope[name]) {
@@ -24,12 +24,11 @@ exports.$function = function (name, params, functionBlock) {
 
     if (name) {
       scope[name] = { type: 'function', value: fn };
-    }
-    else {
+    } else {
       // anonymous function expression
       return fn;
     }
-  };
+  });
 
   if (name) {
     // Only named functions should be hoisted
@@ -41,21 +40,18 @@ exports.$function = function (name, params, functionBlock) {
 
 // TODO: implement $return calls inside blocks
 exports.$return = function (expression) {
-  return (scope = getTopLevelScope()) => {
-    return typeof expression === 'function' ? expression(scope) : expression;
-  }
-}
+  return withScope(scope => {
+    return scoped(expression, scope);
+  });
+};
 
 exports.$call = function (fn, ...params) {
-  return (scope = getTopLevelScope()) => {
-    const scopedFn = fn(scope);
-    // TODO: check if it's an internal Functionall function somehow?
-    // TODO: let fn be the string name of a function?
+  return withScope(scope => {
+    const scopedFn =
+      typeof fn === 'string' ? scoped($get(fn), scope) : scoped(fn, scope);
 
-    const scopedParams = params.map(p =>
-      typeof p === 'function' ? p(scope) : p
-    );
+    const scopedParams = scoped(params, scope);
 
     return scopedFn(...scopedParams);
-  };
+  });
 };

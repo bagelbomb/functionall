@@ -1,61 +1,37 @@
 'use strict';
 
-const { getTopLevelScope } = require('../utils/topLevelScope');
+const { withScope, scoped } = require('../utils/scope');
 
 exports.$add = function (...nums) {
-  return (scope = getTopLevelScope()) => {
-    const firstNum = typeof nums[0] === 'function' ? nums[0](scope) : nums[0];
+  return withScope(scope => {
+    const scopedNums = scoped(nums, scope);
 
-    return nums
-      .slice(1)
-      .reduce(
-        (acc, num) =>
-          typeof num === 'function' ? acc + num(scope) : acc + num,
-        firstNum
-      );
-  };
+    return scopedNums.slice(1).reduce((acc, num) => acc + num, scopedNums[0]);
+  });
 };
 
 exports.$subtract = function (...nums) {
-  return (scope = getTopLevelScope()) => {
-    const firstNum = typeof nums[0] === 'function' ? nums[0](scope) : nums[0];
+  return withScope(scope => {
+    const scopedNums = scoped(nums, scope);
 
-    return nums
-      .slice(1)
-      .reduce(
-        (acc, num) =>
-          typeof num === 'function' ? acc - num(scope) : acc - num,
-        firstNum
-      );
-  };
+    return scopedNums.slice(1).reduce((acc, num) => acc - num, scopedNums[0]);
+  });
 };
 
 exports.$multiply = function (...nums) {
-  return (scope = getTopLevelScope()) => {
-    const firstNum = typeof nums[0] === 'function' ? nums[0](scope) : nums[0];
+  return withScope(scope => {
+    const scopedNums = scoped(nums, scope);
 
-    return nums
-      .slice(1)
-      .reduce(
-        (acc, num) =>
-          typeof num === 'function' ? acc * num(scope) : acc * num,
-        firstNum
-      );
-  };
+    return scopedNums.slice(1).reduce((acc, num) => acc * num, scopedNums[0]);
+  });
 };
 
 exports.$divide = function (...nums) {
-  return (scope = getTopLevelScope()) => {
-    const firstNum = typeof nums[0] === 'function' ? nums[0](scope) : nums[0];
+  return withScope(scope => {
+    const scopedNums = scoped(nums, scope);
 
-    return nums
-      .slice(1)
-      .reduce(
-        (acc, num) =>
-          typeof num === 'function' ? acc / num(scope) : acc / num,
-        firstNum
-      );
-  };
+    return scopedNums.slice(1).reduce((acc, num) => acc / num, scopedNums[0]);
+  });
 };
 
 // TODO: add exponent, modulus, postfix-increment, postfix-decrement, prefix-increment, and prefix-decrement

@@ -1,26 +1,24 @@
 'use strict';
 
-const { getTopLevelScope } = require('../utils/topLevelScope');
+const { withScope, scoped } = require('../utils/scope');
 
 exports.$object = function (...entries) {
-  return (scope = getTopLevelScope()) => {
-    const scopedEntries = entries.map(entry =>
-      typeof entry === 'function' ? entry(scope) : entry
-    );
+  return withScope(scope => {
+    const scopedEntries = scoped(entries, scope);
 
     return Object.assign({}, ...scopedEntries);
-  };
+  });
 };
 
 exports.$entry = function (key, value) {
-  return (scope = getTopLevelScope()) => {
+  return withScope(scope => {
     // if value is passed (passing undefined is allowed):
     if (arguments[1]) {
-      const val = typeof value === 'function' ? value(scope) : value;
+      const val = scoped(value, scope);
 
       return { [key]: val };
     }
 
-    return { [key]: $get(key)(scope) };
-  };
+    return { [key]: scoped($get(key), scope) };
+  });
 };

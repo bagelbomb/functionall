@@ -3,7 +3,7 @@
 const keywords = require('./keywords');
 const operators = require('./operators');
 const structures = require('./structures');
-const { resetTopLevelScope } = require('./utils/topLevelScope');
+const { resetTopLevelScope } = require('./utils/scope');
 const hoistFunctions = require('./utils/hoistFunctions');
 
 Object.assign(globalThis, {
@@ -24,7 +24,7 @@ module.exports = (...statements) => {
 // TODO: Add Parcel
 // TODO: Add unit tests
 // TODO: Add more error handling
-// TODO: Add function to automatically add scope?
+// TODO: Document
 
 // The goal is to implement something like the following (example from coffeescript.org), as a start:
 

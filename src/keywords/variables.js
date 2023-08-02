@@ -1,6 +1,6 @@
 'use strict';
 
-const { getTopLevelScope } = require('../utils/topLevelScope');
+const { withScope, scoped } = require('../utils/scope');
 
 function recursiveGetProp(obj, keys) {
   if (keys.length === 0) {
@@ -23,19 +23,19 @@ function recursiveLookup(name, currentScope) {
 }
 
 exports.$let = function (name, value) {
-  return (scope = getTopLevelScope()) => {
+  return withScope(scope => {
     if (scope[name]) {
       throw new SyntaxError(`Identifier '${name}' has already been declared`);
     }
 
-    const val = typeof value === 'function' ? value(scope) : value;
+    const val = scoped(value, scope);
 
     scope[name] = { type: 'let', value: val };
-  };
+  });
 };
 
 exports.$const = function (name, value) {
-  return (scope = getTopLevelScope()) => {
+  return withScope(scope => {
     // if value isn't passed (passing undefined is allowed):
     if (!arguments[1]) {
       throw new SyntaxError('Missing initializer in const declaration');
@@ -45,14 +45,14 @@ exports.$const = function (name, value) {
       throw new SyntaxError(`Identifier '${name}' has already been declared`);
     }
 
-    const val = typeof value === 'function' ? value(scope) : value;
+    const val = scoped(value, scope);
 
     scope[name] = { type: 'const', value: val };
-  };
+  });
 };
 
 exports.$get = function (name, ...keys) {
-  return (scope = getTopLevelScope()) => {
+  return withScope(scope => {
     if (typeof name === 'string') {
       const variable = recursiveLookup(name, scope);
 
@@ -68,11 +68,11 @@ exports.$get = function (name, ...keys) {
     }
 
     return recursiveGetProp(name, keys);
-  };
+  });
 };
 
 exports.$set = function (name, value) {
-  return (scope = getTopLevelScope()) => {
+  return withScope(scope => {
     const variable = recursiveLookup(name, scope);
 
     if (!variable) {
@@ -84,8 +84,8 @@ exports.$set = function (name, value) {
       throw new TypeError('Assignment to constant variable.');
     }
 
-    const val = typeof value === 'function' ? value(scope) : value;
+    const val = scoped(value, scope);
 
     variable.value = val;
-  };
+  });
 };

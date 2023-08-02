@@ -1,21 +1,21 @@
 'use strict';
 
-const { getTopLevelScope } = require('../utils/topLevelScope');
+const { withScope } = require('../utils/scope');
 
 exports.$and = function (...conditions) {
-  return (scope = getTopLevelScope()) => {
+  return withScope(scope => {
     return conditions.every(c => c(scope));
-  };
+  });
 };
 
 exports.$or = function (...conditions) {
-  return (scope = getTopLevelScope()) => {
+  return withScope(scope => {
     return conditions.some(c => c(scope));
-  };
+  });
 };
 
 exports.$not = function (condition) {
-  return (scope = getTopLevelScope()) => {
+  return withScope(scope => {
     return !condition(scope);
-  };
+  });
 };
